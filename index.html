@@ -9,14 +9,17 @@
     <div class="app">
       <h1 class="form-title">Cerca una genere letterario!</h1>
       <form class="form" id="search-form">
-        <label for="search" class="form-label"></label
-        ><input
-          type="search"
-          class="form-input"
-          id="search"
-          placeholder="es. history, war, fantasy..."
-          aria-label="Cerca un genere letterario" />
-        <button class="search-btn" type="submit">Cerca</button>
+        <label for="search" class="form-label"></label>
+
+        <div class="search-box">
+          <input
+            type="search"
+            class="form-input"
+            id="search"
+            placeholder="es. history, war, fantasy..."
+            aria-label="Cerca un genere letterario" />
+          <button class="search-btn" type="submit">Cerca</button>
+        </div>
       </form>
       <div class="results-container" id="results" aria-live="polite"></div>
     </div>
