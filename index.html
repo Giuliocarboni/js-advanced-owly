@@ -5,5 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Owly</title>
   </head>
-  <body></body>
+  <body>
+    <div class="app">
+      <h1 class="form-title">Cerca una genere letterario!</h1>
+      <form class="form" id="search-form">
+        <label for="search" class="form-label"></label
+        ><input
+          type="search"
+          class="form-input"
+          id="search"
+          placeholder="es. history, war, fantasy..."
+          aria-label="Cerca un genere letterario" />
+        <button class="search-btn" type="submit">Cerca</button>
+      </form>
+      <div class="results-container" id="results" aria-live="polite"></div>
+    </div>
+  </body>
 </html>
