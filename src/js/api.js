@@ -5,7 +5,7 @@ import {
   resultsContainer,
 } from "./dom.js";
 
-const bookDataRequest = async (genre) => {
+export const bookDataRequest = async (genre) => {
   try {
     const response = await fetch(
       `https://openlibrary.org/subjects/${genre}.json`,
@@ -21,11 +21,3 @@ const bookDataRequest = async (genre) => {
     throw error;
   }
 };
-
-searchForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const query = searchInput.value.toLowerCase().trim();
-  if (query) {
-    await bookDataRequest(query);
-  }
-});
