@@ -1,0 +1,150 @@
+:root {
+  --color-bg: #faf9f6;
+  --color-surface: #ffffff;
+  --color-ink: #1e1b16;
+  --color-muted: #6b6459;
+  --color-accent: #6e3b3b;
+  --color-border: #e4e0d8;
+
+  --font-serif: "Lora", serif;
+  --font-sans: "Noto Sans", sans-serif;
+
+  --radius: 4px;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-2);
+}
+
+.form-title {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin: 0 0 var(--space-3);
+}
+
+.search-box {
+  display: flex;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.search-box:focus-within {
+  border-color: var(--color-accent);
+}
+
+.form-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.form-input::placeholder {
+  color: var(--color-muted);
+}
+
+.form-input:focus {
+  outline: none;
+}
+
+.search-btn {
+  border: none;
+  padding: 0 var(--space-3);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-btn:hover {
+  background: #5a2f2f;
+}
+
+.search-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.results-container {
+  margin-top: var(--space-4);
+}
+
+.book-card {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.book-card:first-child {
+  border-top: 1px solid var(--color-border);
+}
+
+.book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.book-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.book-authors {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.no-results {
+  padding: var(--space-4) 0;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-btn {
+    transition: none;
+  }
+}
