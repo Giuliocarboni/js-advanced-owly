@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/js/api-pseudo.js
+src/css/stylesprov.css

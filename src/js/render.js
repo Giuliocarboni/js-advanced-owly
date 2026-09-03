@@ -48,3 +48,17 @@ export const renderBooks = (books, container) => {
 
   container.replaceChildren(fragment);
 };
+
+export const renderDescription = (key, text, container) => {
+  const card = container.querySelector(`[data-key="${key}"]`);
+  if (!card) return;
+
+  let descriptionElement = card.querySelector(".book-description");
+  if (!descriptionElement) {
+    descriptionElement = document.createElement("p");
+    descriptionElement.className = "book-description";
+    card.querySelector(".book-info").append(descriptionElement);
+  }
+
+  descriptionElement.textContent = text;
+};
