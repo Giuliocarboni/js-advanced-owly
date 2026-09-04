@@ -22,7 +22,9 @@ export const descriptionDataRequest = async (key) => {
   try {
     const response = await fetch(`${baseURL}${key}.json`);
     if (!response.ok) {
-      throw new Error(`Errore nella richiesta http: ${response.status}`);
+      throw new Error(
+        `Errore durante il recupero dei dati: ${response.status}`,
+      );
     }
     const data = await response.json();
     if (!data.description) {
