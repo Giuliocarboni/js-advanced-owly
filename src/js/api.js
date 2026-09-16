@@ -5,8 +5,9 @@ export const bookDataRequest = async (genre) => {
     const encodedGenre = encodeURIComponent(genre);
     const response = await fetch(`${baseURL}/subjects/${encodedGenre}.json`);
     if (!response.ok) {
-      throw new Error(
+      throw new HttpError(
         `Errore durante il recupero dei dati: ${response.status}`,
+        response.status,
       );
     }
 
@@ -39,3 +40,11 @@ export const descriptionDataRequest = async (key) => {
     throw error;
   }
 };
+
+export class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = "HttpError";
+    this.status = status;
+  }
+}

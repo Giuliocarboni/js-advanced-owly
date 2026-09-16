@@ -25,3 +25,7 @@ dist-ssr
 
 src/js/api-pseudo.js
 src/css/stylesprov.css
+
+# Testing
+coverage/
+.vitest/

@@ -1,4 +1,4 @@
-export const renderBooks = (books, container) => {
+export const renderBooks = (books, query, container) => {
   container.replaceChildren();
 
   if (!books || books.length === 0) {
@@ -9,13 +9,21 @@ export const renderBooks = (books, container) => {
     return;
   }
 
+  const resultsMsg = document.createElement("p");
+  resultsMsg.className = "results-msg";
+  resultsMsg.textContent = `I migliori libri per il genere "${query}":`;
+
   const fragment = document.createDocumentFragment();
+  fragment.append(resultsMsg);
 
   books.forEach((book, index) => {
     const card = document.createElement("article");
     card.className = "book-card";
     if (book.key) {
       card.dataset.key = book.key;
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-expanded", "false");
     }
 
     const bookInfo = document.createElement("div");

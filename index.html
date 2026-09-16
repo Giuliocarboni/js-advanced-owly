@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Owly</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="./src/assets/img/favicon/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,19 +16,24 @@
     <link rel="stylesheet" href="./src/css/styles.css" />
     <script type="module" src="./src/js/main.js" defer></script>
   </head>
+  <header>
+    <nav><a href="#" id="logo">Owly</a></nav>
+  </header>
   <body>
     <div class="app">
-      <h1 class="form-title">Cerca un genere letterario!</h1>
+      <h1 class="form-title">
+        Cerca generi letterari e lascia che Owly ti mostri i libri più popolari
+        in ogni categoria.
+      </h1>
       <form class="form" id="search-form">
-        <label for="search" class="form-label"></label>
-
         <div class="search-box">
           <input
             type="search"
             class="form-input"
             id="search"
             placeholder="es. history, war, fantasy..."
-            aria-label="Cerca un genere letterario" />
+            aria-label="Cerca un genere letterario"
+            autocomplete="off" />
           <button class="search-btn" type="submit">Cerca</button>
         </div>
       </form>
