@@ -13,6 +13,8 @@ Owly è un'applicazione web che permette di cercare generi letterari e di scopri
 - [Test](#test)
 - [Accessibilità](#accessibilità)
 - [Design](#design)
+- [Utilizzo](#utilizzo)
+- [Contatti](#contatti)
 
 ---
 
@@ -69,4 +71,11 @@ Nel progetto sono state impiegate diverse pratiche di accessibilità:
 ## Design
 
 Il layout è pensato a colonna singola, il che lo rende fluido e leggibile sia su desktop che su mobile.
-La palette di colori dell'applicazione 
+
+## Utilizzo
+
+L'applicazione è pronta per essere utilizzata ed è accessibile a questo [link](https://owlyjs.netlify.app/)
+
+## Contatti
+
+giuliocarboni.github.io
