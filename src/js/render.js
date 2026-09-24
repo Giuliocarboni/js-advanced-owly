@@ -4,14 +4,16 @@ export const renderBooks = (books, query, container) => {
   if (!books || books.length === 0) {
     const noResultMsg = document.createElement("p");
     noResultMsg.className = "no-results";
-    noResultMsg.textContent = "Nessun risultato trovato per questo genere";
+    noResultMsg.textContent = "Nessun risultato trovato per questo genere.";
     container.append(noResultMsg);
     return;
   }
 
+  const displayQuery = query.replace(/_/g, " ");
+
   const resultsMsg = document.createElement("p");
   resultsMsg.className = "results-msg";
-  resultsMsg.textContent = `I migliori libri per il genere "${query}":`;
+  resultsMsg.textContent = `I migliori libri per il genere "${displayQuery}":`;
 
   const fragment = document.createDocumentFragment();
   fragment.append(resultsMsg);
