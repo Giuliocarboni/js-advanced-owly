@@ -80,7 +80,7 @@ describe("api.js", () => {
       fetch.mockResolvedValueOnce({ ok: false, status: 404 });
 
       await expect(descriptionDataRequest("/works/123")).rejects.toThrow(
-        "Errore nella richiesta http: 404",
+        "Errore durante il recupero dei dati: 404",
       );
     });
 

@@ -15,7 +15,7 @@ describe("renderBooks", () => {
     const noResults = container.querySelector(".no-results");
     expect(noResults).not.toBeNull();
     expect(noResults.textContent).toBe(
-      "Nessun risultato trovato per questo genere",
+      "Nessun risultato trovato per questo genere.",
     );
     expect(container.querySelectorAll(".book-card")).toHaveLength(0);
 
