@@ -1,6 +1,6 @@
 # Owly
 
-Owly è un'applicazione web che permette di cercare generi letterari e di scoprire i libri più popolari in ogni categori tramite la API di [OpenLibrary](https://openlibrary.org/).
+Owly è un'applicazione web che permette di cercare generi letterari e di scoprire i libri più popolari in ogni categoria tramite la API di [OpenLibrary](https://openlibrary.org/).
 
 ---
 
