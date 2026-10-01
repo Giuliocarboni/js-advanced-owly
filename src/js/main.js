@@ -1,6 +1,7 @@
 import { bookDataRequest, descriptionDataRequest, HttpError } from "./api.js";
 import { searchForm, searchInput, resultsContainer } from "./dom.js";
 import { renderBooks, renderDescription } from "./render.js";
+import "../js-footer/footer-year-auto-update.js";
 
 const logo = document.getElementById("logo");
 
