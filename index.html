@@ -13,8 +13,15 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="./src/css/styles.css" />
     <script type="module" src="./src/js/main.js" defer></script>
+    <script defer src="./src/js-footer/footer-year-auto-update.js"></script>
   </head>
   <header>
     <nav><a href="#" id="logo">Owly</a></nav>
@@ -40,4 +47,32 @@
       <div class="results-container" id="results" aria-live="polite"></div>
     </div>
   </body>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-social-links">
+        <ul>
+          <li>
+            <a
+              href="https://github.com/Giuliocarboni"
+              rel="noopener"
+              target="_blank"
+              aria-label="Link GitHub">
+              <i class="fa-brands fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.linkedin.com/in/giulio-carboni-6a926a41b/?skipRedirect=true"
+              rel="noopener"
+              target="_blank">
+              <i class="fa-brands fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <p class="copyright">
+        &copy; <span id="current-year"></span> Giulio Carboni
+      </p>
+    </div>
+  </footer>
 </html>

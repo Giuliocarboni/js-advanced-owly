@@ -49,6 +49,10 @@ a {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
   font-family: var(--font-sans);
   line-height: 1.5;
 
@@ -93,6 +97,7 @@ nav a:focus-visible {
 }
 
 .app {
+  flex: 1 0 auto;
   min-width: 18.75rem;
   max-width: 40rem;
   margin: 0 auto;
@@ -252,6 +257,78 @@ nav a:focus-visible {
   text-align: center;
 
   color: var(--color-muted);
+}
+
+footer {
+  width: 100%;
+  margin-top: 6rem;
+  padding: var(--space-3) var(--space-2);
+
+  background-color: var(--color-bg);
+}
+
+footer .footer-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  max-width: 120rem;
+  margin: 0 auto;
+
+  gap: var(--space-2);
+}
+
+footer .footer-social-links ul {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  gap: var(--space-1);
+}
+
+footer .footer-social-links li {
+  display: flex;
+}
+
+footer .footer-social-links a {
+  font-size: 1.5rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+
+  opacity: 0.8;
+  color: var(--color-text);
+}
+
+footer .footer-social-links a:hover {
+  transform: scale(1.15);
+
+  opacity: 1;
+}
+
+footer .footer-social-links .fa-brands {
+  color: var(--color-text);
+}
+
+footer .copyright {
+  font-size: 1rem;
+  font-weight: 300;
+
+  margin: 0;
+
+  text-align: center;
+
+  opacity: 0.7;
+  color: var(--color-text);
 }
 
 @media (max-width: 480px) {
