@@ -78,4 +78,4 @@ L'applicazione è pronta per essere utilizzata ed è accessibile a questo [link]
 
 ## Contatti
 
-giuliocarboni.github.io
+giuliocarboni.com
