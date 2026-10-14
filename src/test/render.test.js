@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from "vitest";
-import { renderBooks, renderDescription } from "../js/render.js";
+import { renderBooks, appendBooks, renderDescription } from "../js/render.js";
 
 describe("renderBooks", () => {
   let container;
@@ -97,6 +97,124 @@ describe("renderBooks", () => {
     expect(cards[2].querySelector(".book-authors").textContent).toBe(
       "Autore sconosciuto",
     );
+  });
+});
+
+describe("appendBooks", () => {
+  let container;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+  });
+
+  it("aggiunge le nuove card dopo quelle esistenti senza ricrearle", () => {
+    renderBooks(
+      [{ key: "/works/OL1W", title: "Primo", authors: [{ name: "Autore A" }] }],
+      "storia",
+      container,
+    );
+    const existingCard = container.querySelector(".book-card");
+
+    appendBooks(
+      [
+        {
+          key: "/works/OL2W",
+          title: "Secondo",
+          authors: [{ name: "Autore B" }],
+        },
+      ],
+      1,
+      container,
+    );
+
+    const cards = container.querySelectorAll(".book-card");
+    expect(cards).toHaveLength(2);
+    expect(cards[0]).toBe(existingCard);
+    expect(cards[1].dataset.key).toBe("/works/OL2W");
+    expect(container.querySelectorAll(".results-msg")).toHaveLength(1);
+  });
+
+  it("conserva lo stato delle card già presenti (es. descrizione aperta)", () => {
+    renderBooks([{ key: "/works/OL1W", title: "Primo" }], "storia", container);
+    const existingCard = container.querySelector(".book-card");
+    existingCard.classList.add("is-selected");
+    existingCard.setAttribute("aria-expanded", "true");
+
+    appendBooks([{ key: "/works/OL2W", title: "Secondo" }], 1, container);
+
+    expect(existingCard.classList.contains("is-selected")).toBe(true);
+    expect(existingCard.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("continua la numerazione a partire dall'indice indicato", () => {
+    appendBooks(
+      [
+        { key: "/works/OL13W", title: "Tredicesimo" },
+        { key: "/works/OL14W", title: "Quattordicesimo" },
+      ],
+      12,
+      container,
+    );
+
+    const titles = [...container.querySelectorAll(".book-title")].map(
+      (title) => title.textContent,
+    );
+    expect(titles).toEqual(["13. Tredicesimo", "14. Quattordicesimo"]);
+  });
+
+  it("applica gli stessi attributi di accessibilità e le stesse regole sugli autori di renderBooks", () => {
+    appendBooks(
+      [
+        {
+          key: "/works/OL5W",
+          title: "Opera Anonima",
+          authors: [{ name: "opera anonima" }],
+        },
+        { title: "Senza identificativo" },
+      ],
+      0,
+      container,
+    );
+
+    const [withKey, withoutKey] = container.querySelectorAll(".book-card");
+
+    expect(withKey.dataset.key).toBe("/works/OL5W");
+    expect(withKey.getAttribute("tabindex")).toBe("0");
+    expect(withKey.getAttribute("role")).toBe("button");
+    expect(withKey.getAttribute("aria-expanded")).toBe("false");
+    expect(withKey.querySelector(".book-authors").textContent).toBe(
+      "Autore anonimo",
+    );
+
+    expect(withoutKey.dataset.key).toBeUndefined();
+    expect(withoutKey.getAttribute("tabindex")).toBeNull();
+    expect(withoutKey.querySelector(".book-authors").textContent).toBe(
+      "Autore sconosciuto",
+    );
+  });
+
+  it("restituisce la prima card aggiunta", () => {
+    const firstNewCard = appendBooks(
+      [
+        { key: "/works/OL1W", title: "Primo" },
+        { key: "/works/OL2W", title: "Secondo" },
+      ],
+      0,
+      container,
+    );
+
+    expect(firstNewCard).toBe(container.querySelector(".book-card"));
+    expect(firstNewCard.dataset.key).toBe("/works/OL1W");
+  });
+
+  it("non modifica il contenitore e restituisce null se non ci sono libri", () => {
+    container.innerHTML = '<article class="book-card"></article>';
+    const initialHTML = container.innerHTML;
+
+    expect(appendBooks([], 1, container)).toBeNull();
+    expect(appendBooks(null, 1, container)).toBeNull();
+    expect(appendBooks(undefined, 1, container)).toBeNull();
+    expect(container.innerHTML).toBe(initialHTML);
   });
 });
 

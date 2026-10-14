@@ -1,11 +1,19 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  beforeEach,
+  afterEach,
+} from "vitest";
 import {
   bookDataRequest,
   descriptionDataRequest,
   HttpError,
 } from "../js/api.js";
-import { renderBooks, renderDescription } from "../js/render.js";
+import { renderBooks, appendBooks, renderDescription } from "../js/render.js";
 
 vi.mock("../js/api.js", async (importOriginal) => {
   const actual = await importOriginal();
@@ -24,10 +32,19 @@ const mockLogo = document.createElement("a");
 mockLogo.id = "logo";
 document.body.appendChild(mockLogo);
 
+const mockLoadMoreContainer = document.createElement("div");
+const mockLoadMoreError = document.createElement("p");
+const mockLoadMoreBtn = document.createElement("button");
+mockLoadMoreContainer.append(mockLoadMoreError, mockLoadMoreBtn);
+document.body.appendChild(mockLoadMoreContainer);
+
 vi.mock("../js/dom.js", () => ({
   searchForm: mockSearchForm,
   searchInput: mockSearchInput,
   resultsContainer: mockResultsContainer,
+  loadMoreContainer: mockLoadMoreContainer,
+  loadMoreBtn: mockLoadMoreBtn,
+  loadMoreError: mockLoadMoreError,
 }));
 
 describe("main.js - Interazioni e Logica dell'App", () => {
@@ -40,6 +57,12 @@ describe("main.js - Interazioni e Logica dell'App", () => {
     mockSearchInput.value = "";
     mockResultsContainer.innerHTML = "";
     mockResultsContainer.className = "";
+    mockLoadMoreContainer.hidden = true;
+    mockLoadMoreError.hidden = true;
+    mockLoadMoreError.textContent = "";
+    mockLoadMoreBtn.textContent = "Carica più risultati";
+    mockLoadMoreBtn.removeAttribute("aria-busy");
+    mockLoadMoreBtn.blur();
   });
 
   describe("Sottomissione del form di ricerca", () => {
@@ -224,6 +247,299 @@ describe("main.js - Interazioni e Logica dell'App", () => {
 
       expect(mockSearchInput.value).toBe("");
       expect(mockResultsContainer.innerHTML).toBe("");
+    });
+  });
+
+  describe("pulsante «Carica più risultati»", () => {
+    const makeWorks = (count, start = 0) =>
+      Array.from({ length: count }, (_, i) => ({
+        key: `/works/OL${start + i}W`,
+        title: `Libro ${start + i}`,
+      }));
+
+    const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    const deferred = () => {
+      let resolve;
+      const promise = new Promise((res) => {
+        resolve = res;
+      });
+      return { promise, resolve };
+    };
+
+    const search = async (works, workCount, query = "fantasy") => {
+      mockSearchInput.value = query;
+      bookDataRequest.mockResolvedValueOnce({
+        works,
+        work_count: workCount,
+      });
+      mockSearchForm.dispatchEvent(new Event("submit", { cancelable: true }));
+      await flush();
+    };
+
+    const loadMore = async () => {
+      mockLoadMoreBtn.click();
+      await flush();
+    };
+
+    describe("visibilità dopo la ricerca", () => {
+      it("compare se ci sono altri risultati oltre a quelli mostrati", async () => {
+        await search(makeWorks(12), 40);
+
+        expect(mockLoadMoreContainer.hidden).toBe(false);
+      });
+
+      it("resta nascosto se i risultati mostrati sono già tutti", async () => {
+        await search(makeWorks(12), 12);
+
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+
+      it("senza work_count compare solo se la pagina è piena", async () => {
+        await search(makeWorks(10), undefined);
+        expect(mockLoadMoreContainer.hidden).toBe(false);
+
+        await search(makeWorks(3), undefined);
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+
+      it("si nasconde se una nuova ricerca non trova risultati o fallisce", async () => {
+        await search(makeWorks(12), 40);
+        expect(mockLoadMoreContainer.hidden).toBe(false);
+
+        await search([], 0, "genere_vuoto");
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+
+        await search(makeWorks(12), 40);
+        mockSearchInput.value = "genere_inesistente";
+        bookDataRequest.mockRejectedValueOnce(new HttpError("Not found", 404));
+        mockSearchForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        await flush();
+
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+
+      it("si nasconde e azzera lo stato al click sul logo", async () => {
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockClear();
+
+        mockLogo.dispatchEvent(new Event("click", { cancelable: true }));
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+
+        await loadMore();
+        expect(bookDataRequest).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("caricamento di altri risultati", () => {
+      it("richiede i 10 risultati successivi a partire da quelli già caricati", async () => {
+        const moreWorks = makeWorks(10, 12);
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockResolvedValueOnce({
+          works: moreWorks,
+          work_count: 40,
+        });
+
+        await loadMore();
+
+        expect(bookDataRequest).toHaveBeenLastCalledWith("fantasy", {
+          limit: 10,
+          offset: 12,
+        });
+        expect(appendBooks).toHaveBeenCalledWith(
+          moreWorks,
+          12,
+          mockResultsContainer,
+        );
+        expect(renderBooks).toHaveBeenCalledTimes(1);
+        expect(mockLoadMoreContainer.hidden).toBe(false);
+      });
+
+      it("carica altri 10 risultati a ogni click, avanzando l'offset", async () => {
+        await search(makeWorks(12), 100);
+
+        for (const offset of [12, 22, 32]) {
+          const works = makeWorks(10, offset);
+          bookDataRequest.mockResolvedValueOnce({ works, work_count: 100 });
+
+          await loadMore();
+
+          expect(bookDataRequest).toHaveBeenLastCalledWith("fantasy", {
+            limit: 10,
+            offset,
+          });
+          expect(appendBooks).toHaveBeenLastCalledWith(
+            works,
+            offset,
+            mockResultsContainer,
+          );
+        }
+      });
+
+      it("si nasconde quando ha caricato tutti i risultati disponibili", async () => {
+        await search(makeWorks(12), 22);
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 22,
+        });
+
+        await loadMore();
+
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+
+      it("si nasconde se la risposta non contiene altri libri", async () => {
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockResolvedValueOnce({ works: [], work_count: 40 });
+
+        await loadMore();
+
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+
+      it("dopo una nuova ricerca riparte dall'offset della nuova lista", async () => {
+        await search(makeWorks(12), 40, "fantasy");
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 40,
+        });
+        await loadMore();
+
+        await search(makeWorks(12), 40, "Storia Antica");
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 40,
+        });
+        await loadMore();
+
+        expect(bookDataRequest).toHaveBeenLastCalledWith("storia_antica", {
+          limit: 10,
+          offset: 12,
+        });
+      });
+    });
+
+    describe("stato di caricamento ed errori", () => {
+      it("mostra lo stato di caricamento e ignora i click mentre la richiesta è in corso", async () => {
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockClear();
+        const pending = deferred();
+        bookDataRequest.mockReturnValueOnce(pending.promise);
+
+        mockLoadMoreBtn.click();
+        mockLoadMoreBtn.click();
+
+        expect(bookDataRequest).toHaveBeenCalledTimes(1);
+        expect(mockLoadMoreBtn.textContent).toBe("Caricamento in corso...");
+        expect(mockLoadMoreBtn.getAttribute("aria-busy")).toBe("true");
+
+        pending.resolve({ works: makeWorks(10, 12), work_count: 40 });
+        await flush();
+
+        expect(mockLoadMoreBtn.textContent).toBe("Carica più risultati");
+        expect(mockLoadMoreBtn.getAttribute("aria-busy")).toBeNull();
+        expect(appendBooks).toHaveBeenCalledTimes(1);
+      });
+
+      it("in caso di errore mostra un messaggio, mantiene il bottone e permette di riprovare", async () => {
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockRejectedValueOnce(new Error("Network Error"));
+
+        await loadMore();
+
+        expect(mockLoadMoreError.hidden).toBe(false);
+        expect(mockLoadMoreError.textContent).toBe(
+          "Impossibile caricare altri risultati. Riprova.",
+        );
+        expect(mockLoadMoreContainer.hidden).toBe(false);
+        expect(mockLoadMoreBtn.textContent).toBe("Carica più risultati");
+        expect(appendBooks).not.toHaveBeenCalled();
+
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 40,
+        });
+        await loadMore();
+
+        expect(bookDataRequest).toHaveBeenLastCalledWith("fantasy", {
+          limit: 10,
+          offset: 12,
+        });
+        expect(mockLoadMoreError.hidden).toBe(true);
+        expect(appendBooks).toHaveBeenCalledTimes(1);
+      });
+
+      it("scarta la risposta in ritardo se nel frattempo parte una nuova ricerca", async () => {
+        await search(makeWorks(12), 40, "fantasy");
+        const pending = deferred();
+        bookDataRequest.mockReturnValueOnce(pending.promise);
+        mockLoadMoreBtn.click();
+
+        await search(makeWorks(5), 5, "storia");
+        pending.resolve({ works: makeWorks(10, 12), work_count: 40 });
+        await flush();
+
+        expect(appendBooks).not.toHaveBeenCalled();
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+        expect(mockLoadMoreBtn.textContent).toBe("Carica più risultati");
+      });
+
+      it("scarta la risposta in ritardo se nel frattempo si clicca sul logo", async () => {
+        await search(makeWorks(12), 40);
+        const pending = deferred();
+        bookDataRequest.mockReturnValueOnce(pending.promise);
+        mockLoadMoreBtn.click();
+
+        mockLogo.dispatchEvent(new Event("click", { cancelable: true }));
+        pending.resolve({ works: makeWorks(10, 12), work_count: 40 });
+        await flush();
+
+        expect(appendBooks).not.toHaveBeenCalled();
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+      });
+    });
+
+    describe("focus da tastiera", () => {
+      let newCard;
+
+      beforeEach(() => {
+        newCard = document.createElement("article");
+        newCard.tabIndex = 0;
+        document.body.appendChild(newCard);
+      });
+
+      afterEach(() => {
+        newCard.remove();
+      });
+
+      it("sposta il focus sul primo nuovo risultato se il bottone sparisce mentre è focalizzato", async () => {
+        await search(makeWorks(12), 22);
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 22,
+        });
+        appendBooks.mockReturnValueOnce(newCard);
+        mockLoadMoreBtn.focus();
+
+        await loadMore();
+
+        expect(mockLoadMoreContainer.hidden).toBe(true);
+        expect(document.activeElement).toBe(newCard);
+      });
+
+      it("lascia il focus sul bottone finché ci sono altri risultati", async () => {
+        await search(makeWorks(12), 40);
+        bookDataRequest.mockResolvedValueOnce({
+          works: makeWorks(10, 12),
+          work_count: 40,
+        });
+        appendBooks.mockReturnValueOnce(newCard);
+        mockLoadMoreBtn.focus();
+
+        await loadMore();
+
+        expect(document.activeElement).toBe(mockLoadMoreBtn);
+      });
     });
   });
 });

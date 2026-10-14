@@ -1,9 +1,17 @@
 const baseURL = `https://openlibrary.org`;
 
-export const bookDataRequest = async (genre) => {
+export const PAGE_SIZE = 10;
+
+export const bookDataRequest = async (genre, { limit, offset } = {}) => {
   try {
     const encodedGenre = encodeURIComponent(genre);
-    const response = await fetch(`${baseURL}/subjects/${encodedGenre}.json`);
+    const params = new URLSearchParams();
+    if (limit !== undefined) params.set("limit", limit);
+    if (offset !== undefined) params.set("offset", offset);
+    const queryString = params.toString();
+    const response = await fetch(
+      `${baseURL}/subjects/${encodedGenre}.json${queryString ? `?${queryString}` : ""}`,
+    );
     if (!response.ok) {
       throw new HttpError(
         `Errore durante il recupero dei dati: ${response.status}`,

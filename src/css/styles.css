@@ -259,6 +259,47 @@ nav a:focus-visible {
   color: var(--color-muted);
 }
 
+.load-more {
+  margin-top: var(--space-2);
+
+  text-align: center;
+}
+
+.load-more-error {
+  margin-bottom: var(--space-1);
+}
+
+.load-more-btn {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  padding: 0.75rem var(--space-3);
+
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-border);
+}
+
+.load-more-btn:hover {
+  background-color: var(--color-text);
+}
+
+.load-more-btn:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.load-more-btn[aria-busy="true"] {
+  cursor: progress;
+
+  opacity: 0.7;
+}
+
 footer {
   width: 100%;
   margin-top: 6rem;
@@ -339,11 +380,16 @@ footer .copyright {
   .form-title {
     font-size: 1.5rem;
   }
+
+  .load-more-btn {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .search-box,
   .search-btn,
+  .load-more-btn,
   .book-card[data-key] {
     transition: none;
   }

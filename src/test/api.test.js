@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { bookDataRequest, descriptionDataRequest } from "../js/api.js";
+import {
+  bookDataRequest,
+  descriptionDataRequest,
+  PAGE_SIZE,
+} from "../js/api.js";
 
 describe("api.js", () => {
   beforeEach(() => {
@@ -23,6 +27,36 @@ describe("api.js", () => {
         "https://openlibrary.org/subjects/sci-fi%20%26%20fantasy.json",
       );
       expect(result).toEqual(mockData);
+    });
+
+    it("carica 10 risultati alla volta", () => {
+      expect(PAGE_SIZE).toBe(10);
+    });
+
+    it("aggiunge limit e offset all'URL quando vengono forniti", async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ works: [] }),
+      });
+
+      await bookDataRequest("fantasy", { limit: 10, offset: 12 });
+
+      expect(fetch).toHaveBeenCalledWith(
+        "https://openlibrary.org/subjects/fantasy.json?limit=10&offset=12",
+      );
+    });
+
+    it("include offset=0 nell'URL: lo zero non è un valore assente", async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ works: [] }),
+      });
+
+      await bookDataRequest("fantasy", { limit: 10, offset: 0 });
+
+      expect(fetch).toHaveBeenCalledWith(
+        "https://openlibrary.org/subjects/fantasy.json?limit=10&offset=0",
+      );
     });
 
     it("lancia un'eccezione se la risposta HTTP non è ok", async () => {

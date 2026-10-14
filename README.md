@@ -28,6 +28,7 @@ Nel momento in cui l'utente cerca un genere letterario (es. fantasy, history, wa
 
 - **Ricerca per genere letterario**, con normalizzazione automatica della query nel formato richiesto dall'API (minuscolo e spazi convertiti in underscore);
 - **elenco numerato dei libri**, con titolo e autori;
+- **caricamento progressivo dei risultati**: il pulsante "Carica più risultati" aggiunge altri 10 libri alla lista a ogni click, usando i parametri `limit` e `offset` dell'API, senza ricostruire le card già visibili (la descrizione aperta resta aperta); il pulsante scompare quando i risultati sono finiti;
 - **gestione delle opere anonime**: se il nome dell'autore coincide con il titolo del libro viene mostrato "Autore anonimo";
 - **descrizione caricata su richiesta dell'utente**: il testo descrittivo di un'opera viene richiesto all'API solo al primo click sulla relativa card, per non rallentare la ricerca iniziale;
 - **lista risultati ad accordion**: può restare aperta una sola card alla volta; se l'utente clicca su un'altra card, quella precedente si chiude;
@@ -55,7 +56,7 @@ La logica dell'applicazione è organizzata in quattro moduli per separare le res
 
 ## Test
 
-Il progetto usa **Vitest** e comprende 25 test unitari divisi in tre file, uno per ogni modulo con logica. Per i test che coinvolgono il DOM viene usato **jsdom**, che simula il browser in Node.
+Il progetto usa **Vitest** e comprende 50 test unitari divisi in tre file, uno per ogni modulo con logica. Per i test che coinvolgono il DOM viene usato **jsdom**, che simula il browser in Node.
 
 ## Accessibilità
 
@@ -66,6 +67,7 @@ Nel progetto sono state impiegate diverse pratiche di accessibilità:
 - **`:focus-visible`** con outline dedicato e offset negativo, per distinguere chiaramente il focus da tastiera dal semplice hover del mouse, senza che l'outline "esca" dai bordi della lista;
 - **`prefers-reduced-motion`**: tutte le transizioni vengono disattivate per gli utenti che hanno richiesto una riduzione delle animazioni a livello di sistema operativo;
 - **`aria-label`** nel cmapo di ricerca;
+- **gestione del focus nel caricamento progressivo**: il pulsante "Carica più risultati" segnala lo stato di caricamento con `aria-busy` e non viene disabilitato (così da non perdere il focus); se sparisce mentre è selezionato da tastiera, il focus passa al primo dei nuovi risultati; gli errori vengono annunciati con `role="alert"`;
 - **separazione tra area cliccabile e testo selezionabile nelle card**: il click sul testo della descrizione non ne provoca la chiusura e il cursore passa a `text`, in modo da poterla rendere selezionabile.
 
 ## Design

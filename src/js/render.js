@@ -1,3 +1,40 @@
+const createBookCard = (book, index) => {
+  const card = document.createElement("article");
+  card.className = "book-card";
+  if (book.key) {
+    card.dataset.key = book.key;
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-expanded", "false");
+  }
+
+  const bookInfo = document.createElement("div");
+  bookInfo.className = "book-info";
+
+  const title = document.createElement("h3");
+  title.className = "book-title";
+  title.textContent = `${index + 1}. ${book.title}`;
+
+  const authors = document.createElement("p");
+  authors.className = "book-authors";
+  authors.textContent = book.authors
+    ? book.authors
+        .map((author) => {
+          if (
+            author.name.trim().toLowerCase() === book.title.trim().toLowerCase()
+          ) {
+            return "Autore anonimo";
+          }
+          return author.name;
+        })
+        .join(", ")
+    : "Autore sconosciuto";
+
+  bookInfo.append(title, authors);
+  card.append(bookInfo);
+  return card;
+};
+
 export const renderBooks = (books, query, container) => {
   container.replaceChildren();
 
@@ -19,44 +56,21 @@ export const renderBooks = (books, query, container) => {
   fragment.append(resultsMsg);
 
   books.forEach((book, index) => {
-    const card = document.createElement("article");
-    card.className = "book-card";
-    if (book.key) {
-      card.dataset.key = book.key;
-      card.setAttribute("tabindex", "0");
-      card.setAttribute("role", "button");
-      card.setAttribute("aria-expanded", "false");
-    }
-
-    const bookInfo = document.createElement("div");
-    bookInfo.className = "book-info";
-
-    const title = document.createElement("h3");
-    title.className = "book-title";
-    title.textContent = `${index + 1}. ${book.title}`;
-
-    const authors = document.createElement("p");
-    authors.className = "book-authors";
-    authors.textContent = book.authors
-      ? book.authors
-          .map((author) => {
-            if (
-              author.name.trim().toLowerCase() ===
-              book.title.trim().toLowerCase()
-            ) {
-              return "Autore anonimo";
-            }
-            return author.name;
-          })
-          .join(", ")
-      : "Autore sconosciuto";
-
-    bookInfo.append(title, authors);
-    card.append(bookInfo);
-    fragment.appendChild(card);
+    fragment.appendChild(createBookCard(book, index));
   });
 
   container.replaceChildren(fragment);
+};
+
+export const appendBooks = (books, startIndex, container) => {
+  if (!books || books.length === 0) return null;
+
+  const cards = books.map((book, index) =>
+    createBookCard(book, startIndex + index),
+  );
+  container.append(...cards);
+
+  return cards[0];
 };
 
 export const renderDescription = (key, text, container) => {
