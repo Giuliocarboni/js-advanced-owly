@@ -80,4 +80,4 @@ L'applicazione è pronta per essere utilizzata ed è accessibile a questo [link]
 
 ## Contatti
 
-giuliocarboni.com
+[giuliocarboni.com](https://giuliocarboni.com/)
