@@ -20,8 +20,6 @@ const LOAD_MORE_LOADING_LABEL = "Caricamento in corso...";
 
 const logo = document.getElementById("logo");
 
-// searchId invalida le risposte in ritardo: se nel frattempo parte una nuova
-// ricerca (o si clicca sul logo) i risultati della vecchia vengono scartati.
 const state = {
   query: "",
   loaded: 0,
@@ -113,8 +111,6 @@ loadMoreBtn.addEventListener("click", async () => {
     const hasMore = hasMoreResults(data, works.length, state.loaded);
     loadMoreContainer.hidden = !hasMore;
 
-    // Se il bottone sparisce mentre ha il focus, lo si sposta sui nuovi
-    // risultati per non far perdere la posizione a chi usa la tastiera.
     if (!hasMore && hadFocus) {
       const target =
         firstNewCard ??

@@ -1,10 +1,11 @@
 :root {
-  --color-bg: #37374c;
-  --color-text: #eff2fb;
-  --color-muted: #a9a9bd;
-  --color-hover: #3f3f54;
-  --color-border: #cba6f7;
-  --font-sans: "Noto Sans", sans-serif;
+  --color-bg: #ffffff;
+  --color-text: #0c2338;
+  --color-muted: #5c6a76;
+  --color-hover: #8da9c02d;
+  --color-border: #2f3c48;
+  --font-serif: "Libre Baskerville", serif;
+  --font-sans: "Montserrat", sans-serif;
   --radius: 9px;
   --space-1: 1rem;
   --space-2: 1.5rem;
@@ -53,7 +54,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
 
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   line-height: 1.5;
 
   margin: 0;
@@ -106,7 +107,7 @@ nav a:focus-visible {
 
 .form-title {
   font-family: var(--font-serif);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 500;
 
   margin-top: calc(var(--space-3) * 2);
@@ -132,7 +133,7 @@ nav a:focus-visible {
 }
 
 .form-input {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 1rem;
 
   flex: 1;
@@ -161,7 +162,7 @@ nav a:focus-visible {
 }
 
 .search-btn {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 0.9rem;
   font-weight: 600;
 
@@ -191,12 +192,16 @@ nav a:focus-visible {
 
 .results-msg,
 .no-results-msg {
-  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.4rem;
+  font-family: var(--font-serif);
 
   margin-bottom: var(--space-3);
 }
 
 .book-card {
+  position: relative;
+
   margin-bottom: var(--space-1);
   padding: var(--space-3) var(--space-1);
 
@@ -217,9 +222,9 @@ nav a:focus-visible {
   background-color: var(--color-hover);
 }
 
-.book-card[data-key]:focus-visible {
-  outline: none;
-  border-color: var(--color-text);
+.book-card[data-key]:has(.book-toggle:focus-visible) {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
 }
 
 .book-info {
@@ -230,11 +235,65 @@ nav a:focus-visible {
 }
 
 .book-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 1.2rem;
   font-weight: 500;
 
   margin: 0;
+}
+
+.book-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+
+  width: 100%;
+  padding: 0;
+
+  text-align: left;
+  cursor: pointer;
+
+  border: none;
+  background: none;
+}
+
+.book-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.book-toggle:focus-visible {
+  outline: none;
+}
+
+.book-toggle-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.book-chevron {
+  flex-shrink: 0;
+  width: 0.5em;
+  height: 0.5em;
+
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--color-muted);
+
+  transform: translateY(-25%) rotate(45deg);
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.book-card[aria-expanded="true"] .book-chevron,
+.book-toggle[aria-expanded="true"] .book-chevron {
+  transform: translateY(25%) rotate(225deg);
+}
+
+.book-card[data-key]:hover .book-chevron {
+  color: var(--color-text);
 }
 
 .book-authors {
@@ -246,6 +305,9 @@ nav a:focus-visible {
 }
 
 .book-description {
+  position: relative;
+  z-index: 1;
+
   margin: var(--space-1) 0 0;
 
   cursor: text;
@@ -270,7 +332,7 @@ nav a:focus-visible {
 }
 
 .load-more-btn {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 0.9rem;
   font-weight: 600;
 
@@ -362,7 +424,8 @@ footer .footer-social-links .fa-brands {
 
 footer .copyright {
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 500;
+  font-family: var(--font-sans);
 
   margin: 0;
 
